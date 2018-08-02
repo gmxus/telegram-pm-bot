@@ -14,8 +14,6 @@ import threading
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-Version_Code = 'v1.0.0'
-
 logging.basicConfig(level=logging.INFO,
 					format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 					)
@@ -147,8 +145,7 @@ def process_command(bot, update):
 	elif command[0] == 'version':
 		bot.send_message(chat_id=update.message.chat_id,
 						 text='Telegram PM Bot to concatnate your conversation between the bot and the sender.\n'
-						 + Version_Code
-						 + '\nhttps://github.com/NewBugger/telegram-pm-bot'
+						 + 'https://github.com/NewBugger/telegram-pm-bot'
 						 )
 		return
 	elif command[0] == 'set_admin':
