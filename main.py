@@ -63,7 +63,7 @@ def init_user(user):
 	global preference_list
 	if not preference_list.has_key(str(user.id)):
 		preference_list[str(user.id)]={}
-		preference_list[str(user.id)]['notification']=True
+		preference_list[str(user.id)]['receipt']=True
 		preference_list[str(user.id)]['name']=user.full_name
 		threading.Thread(target=save_preference).start()
 		return
@@ -115,7 +115,7 @@ def process_msg(bot, update):
 					else:
 						bot.send_message(chat_id=CONFIG['Admin'],text=LANG['reply_message_failed'])
 					return
-				if preference_list[str(update.message.from_user.id)]['notification']:
+				if preference_list[str(update.message.from_user.id)]['receipt']:
 					bot.send_message(chat_id=update.message.chat_id,text=LANG['reply_message_sent'] % (preference_list[str(sender_id)]['name'],str(sender_id)),parse_mode=telegram.ParseMode.MARKDOWN)
 			else:
 				bot.send_message(chat_id=CONFIG['Admin'],text=LANG['reply_to_message_no_data'])
@@ -123,8 +123,8 @@ def process_msg(bot, update):
 			bot.send_message(chat_id=CONFIG['Admin'],text=LANG['reply_to_no_message'])
 	else:
 		fwd_msg = bot.forward_message(chat_id=CONFIG['Admin'], from_chat_id=update.message.chat_id, message_id=update.message.message_id)
-		if preference_list[str(update.message.from_user.id)]['notification']:
-			bot.send_message(chat_id=update.message.from_user.id,text=LANG['message_received_notification'])
+		if preference_list[str(update.message.from_user.id)]['receipt']:
+			bot.send_message(chat_id=update.message.from_user.id,text=LANG['message_received_receipt'])
 		message_list[str(fwd_msg.message_id)]={}
 		message_list[str(fwd_msg.message_id)]['sender_id']=update.message.from_user.id
 		threading.Thread(target=save_data).start()
@@ -155,14 +155,14 @@ def process_command(bot, update):
 		else:
 			bot.send_message(chat_id=update.message.chat_id,text=LANG['set_admin_failed'])
 		return
-	elif command[0] == 'notification_switch':
+	elif command[0] == 'receipt_switch':
 		global preference_list
-		preference_list[str(id)]['notification']=(preference_list[str(id)]['notification'] == False)
+		preference_list[str(id)]['receipt']=(preference_list[str(id)]['receipt'] == False)
 		threading.Thread(target=save_preference).start()
-		if preference_list[str(id)]['notification']:
-			bot.send_message(chat_id=update.message.chat_id,text=LANG['togglenotification_on'])
+		if preference_list[str(id)]['receipt']:
+			bot.send_message(chat_id=update.message.chat_id,text=LANG['receipt_on'])
 		else:
-			bot.send_message(chat_id=update.message.chat_id,text=LANG['togglenotification_off'])
+			bot.send_message(chat_id=update.message.chat_id,text=LANG['receipt_off'])
 	elif command[0] == 'messege_info':
 		if (update.message.from_user.id == CONFIG['Admin']) and (update.message.chat_id == CONFIG['Admin']):
 			if update.message.reply_to_message != None:
