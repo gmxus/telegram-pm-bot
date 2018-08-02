@@ -81,23 +81,22 @@ def process_msg(bot, update):
 	if update.message.from_user.id == CONFIG['Admin']:
 		if update.message.reply_to_message != None:
 			if message_list.__contains__(str(update.message.reply_to_message.message_id)):
-				msg = update.message
 				sender_id = message_list[str(update.message.reply_to_message.message_id)]['sender_id']
 				try:
-					if msg.audio != None:
-						bot.send_audio(chat_id=sender_id,audio=msg.audio, caption=msg.caption)
-					elif msg.document != None:
-						bot.send_document(chat_id=sender_id,document=msg.document,caption=msg.caption)
-					elif msg.voice != None:
-						bot.send_voice(chat_id=sender_id,voice=msg.voice, caption=msg.caption)
-					elif msg.video != None:
-						bot.send_video(chat_id=sender_id,video=msg.video, caption=msg.caption)
-					elif msg.sticker != None:
+					if update.message.audio != None:
+						bot.send_audio(chat_id=sender_id,audio=update.message.audio, caption=update.message.caption)
+					elif update.message.document != None:
+						bot.send_document(chat_id=sender_id,document=update.message.document,caption=update.message.caption)
+					elif update.message.voice != None:
+						bot.send_voice(chat_id=sender_id,voice=update.message.voice, caption=update.message.caption)
+					elif update.message.video != None:
+						bot.send_video(chat_id=sender_id,video=update.message.video, caption=update.message.caption)
+					elif update.message.sticker != None:
 						bot.send_sticker(chat_id=sender_id, sticker=update.message.sticker)
-					elif msg.photo:
-						bot.send_photo(chat_id=sender_id,photo=msg.photo[0], caption=msg.caption)
-					elif msg.text_markdown != None:
-						bot.send_message(chat_id=sender_id,text=msg.text_markdown,parse_mode=telegram.ParseMode.MARKDOWN)
+					elif update.message.photo != None:
+						bot.send_photo(chat_id=sender_id,photo=update.message.photo[0], caption=update.message.caption)
+					elif update.message.text_markdown != None:
+						bot.send_message(chat_id=sender_id,text=update.message.text_markdown,parse_mode=telegram.ParseMode.MARKDOWN)
 					else:
 						bot.send_message(chat_id=CONFIG['Admin'],text=LANG['reply_type_not_supported'])
 						return
@@ -114,21 +113,32 @@ def process_msg(bot, update):
 		else:
 			bot.send_message(chat_id=CONFIG['Admin'],text=LANG['reply_to_no_message'])
 	else:
+		# only when conversation is true
 		if preference_list[str(update.message.from_user.id)]['conversation']:
-			fwd_msg = bot.forward_message(chat_id=CONFIG['Admin'], from_chat_id=update.message.chat_id, message_id=update.message.message_id)
+			# forward messege to me
+			forward_msg_to_me = bot.forward_message(chat_id=CONFIG['Admin'], from_chat_id=update.message.chat_id, message_id=update.message.message_id)
+			# add user-info output to me when content is sticker or photo.
+			if update.message.sticker != None or update.message.photo != None :
+				bot.send_message(chat_id=update.message.chat_id,text=LANG['info_data'] % (preference_list[str(sender_id)]['name'],str(sender_id)),parse_mode=telegram.ParseMode.MARKDOWN)
+
+			# receipt to the sender
 			if preference_list[str(update.message.from_user.id)]['receipt']:
 				bot.send_message(chat_id=update.message.from_user.id,text=LANG['message_received_receipt'])
-			message_list[str(fwd_msg.message_id)]={}
-			message_list[str(fwd_msg.message_id)]['sender_id']=update.message.from_user.id
+			message_list[str(forward_msg_to_me.message_id)]={}
+			message_list[str(forward_msg_to_me.message_id)]['sender_id']=update.message.from_user.id
+
+			# save_data
 			threading.Thread(target=save_data).start()
+
+		# when conversation is false
 		else:
-			bot.send_message(chat_id=update.message.from_user.id,text=LANG['warning_switch_say'])
+			# the sender should run /say
+			bot.send_message(chat_id=update.message.from_user.id, text=LANG['warning_switch_say'])
 	pass
 
 
 def process_command(bot, update):
 	init_user(update.message.from_user)
-	id=update.message.from_user.id
 	global CONFIG
 	command = update.message.text[1:].replace(CONFIG['Username'], '').lower().split()
 	if command[0] == 'start':
@@ -151,9 +161,9 @@ def process_command(bot, update):
 		return
 	elif command[0] == 'receipt_switch':
 		global preference_list
-		preference_list[str(id)]['receipt']=(preference_list[str(id)]['receipt'] == False)
+		preference_list[str(update.message.from_user.id)]['receipt']=(preference_list[str(update.message.from_user.id)]['receipt'] == False)
 		threading.Thread(target=save_preference).start()
-		if preference_list[str(id)]['receipt']:
+		if preference_list[str(update.message.from_user.id)]['receipt']:
 			bot.send_message(chat_id=update.message.chat_id,text=LANG['receipt_on'])
 		else:
 			bot.send_message(chat_id=update.message.chat_id,text=LANG['receipt_off'])
@@ -165,12 +175,14 @@ def process_command(bot, update):
 					bot.send_message(chat_id=update.message.chat_id,text=LANG['info_data'] % (preference_list[str(sender_id)]['name'],str(sender_id)),parse_mode=telegram.ParseMode.MARKDOWN)
 				else:
 					bot.send_message(chat_id=update.message.chat_id,text=LANG['reply_to_message_no_data'])
+	# start conversation
 	elif command[0] == 'say':
 		global preference_list
-		preference_list[str(id)]['conversation']=True
+		preference_list[str(update.message.from_user.id)]['conversation'] = True
+	# end conversation
 	elif command[0] == 'done':
 		global preference_list
-		preference_list[str(id)]['conversation']=False
+		preference_list[str(update.message.from_user.id)]['conversation'] = False
 
 dispatcher.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.all & telegram.ext.Filters.private & (~ telegram.ext.Filters.command) & (~ telegram.ext.Filters.status_update), process_msg))
 
@@ -183,5 +195,5 @@ updater.idle()
 print('Stopping...')
 save_data()
 save_preference()
-print('Data saved.')
+print('Data Saved.')
 print('Stopped.')
