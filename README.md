@@ -1,40 +1,39 @@
-# telegram-pm-chat-bot
-Telegram 私聊机器人
-Telegram Private Message Chat Bot
+# telegram-pm-bot
+concatnate your conversation between the bot and the sender.
 
-## 安装
+based on [telegram-pm-chat-bot](https://github.com/Netrvin/telegram-pm-chat-bot).
 
-### 安装准备
-* 申请Telegram机器人，获取Token
-* 一台外面的服务器，安装好Python 2和pip，并运行指令`pip install python-telegram-bot --upgrade`
 
-### 配置
-打开`config.json`并配置
+## Installation
+firstly prepared the following:
+- python 2
+- pip
+
+then run :
+```bash
+pip install python-telegram-bot --upgrade
 ```
+
+
+## Config
+modify those on `/config.json` :
+```json
 {
-    "Admin": 0,        # 管理员用户ID（数字ID）（可以先不设）
-    "Token": "",       # 机器人Token
-    "Lang": "zh"       # 语言包名称
+    "Admin": 0,        # ID of admin account (number id)
+    "Token": "0",      # Token of bot
+    "Lang": "en"       # name of the lang file
 }
 ```
-如果在前一步未设置管理员用户ID，第一个对机器人发送`/setadmin`的用户将成为管理员，之后可通过修改`config.json`修改管理员
 
-## 运行
-```
+
+## Start
+```bash
 python main.py
 ```
 
-## 使用
 
-### 回复
-直接回复机器人转发过来的消息即可回复，支持文字、贴纸、图片、文件、音频和视频
-
-### 查询用户身份
-部分转发来的消息不便于查看发送者身份，可以通过回复该消息`/info`查询
-
-### 消息发送提示
-向机器人发送指令`/togglenotification`可开启/关闭消息发送提示
-
-效果：
-* 对管理员：回复用户后，如无出错则不会提示“已回复”
-* 对用户：发送消息后，机器人不会回复“已收到”
+## Directive
+| command         | function                                  | parameter                                  |
+| :---            | :---                                      | :---                                       |
+| receipt_switch  | enable or disable receipt                 | /receipt_switch                            |
+| messege_info    | return the info of the messege you point  | /messege_info                              |
