@@ -5,14 +5,10 @@ import time
 import json
 import telegram.ext
 import telegram
-import sys
 import datetime
 import os
 import logging
 import threading
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 logging.basicConfig(level=logging.INFO,
 					format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -37,9 +33,8 @@ def save_data():
 	while MESSAGE_LOCK:
 		time.sleep(0.05)
 	MESSAGE_LOCK = True
-	f = open(PATH + 'data.json', 'w')
-	f.write(json.dumps(message_list))
-	f.close()
+	with open(PATH + 'data.json', 'w') as f:
+		f.write(json.dumps(message_list))
 	MESSAGE_LOCK = False
 
 def save_preference():
@@ -47,19 +42,17 @@ def save_preference():
 	while PREFERENCE_LOCK:
 		time.sleep(0.05)
 	PREFERENCE_LOCK = True
-	f = open(PATH + 'preference.json', 'w')
-	f.write(json.dumps(preference_list))
-	f.close()
+	with open(PATH + 'preference.json', 'w') as f:
+		f.write(json.dumps(preference_list))
 	PREFERENCE_LOCK = False
 
 def save_config():
-	f = open(PATH + 'config.json', 'w')
-	f.write(json.dumps(CONFIG, indent=4))
-	f.close()
+	with open(PATH + 'config.json', 'w') as f:
+		f.write(json.dumps(CONFIG, indent=4))
 
 def init_user(user):
 	global preference_list
-	if not preference_list.has_key(str(user.id)):
+	if not preference_list.__contains__(str(user.id)):
 		preference_list[str(user.id)]={}
 		preference_list[str(user.id)]['receipt']=True
 		preference_list[str(user.id)]['conversation']=False
@@ -77,7 +70,7 @@ me = updater.bot.get_me()
 CONFIG['ID'] = me.id
 CONFIG['Username'] = '@' + me.username
 
-print 'Starting... (ID: ' + str(CONFIG['ID']) + ', Username: ' + CONFIG['Username'] + ')'
+print('Starting... (ID: {0}, Username: {1})'.format(CONFIG['ID'],CONFIG['Username']))
 
 def process_msg(bot, update):
 	global message_list
@@ -87,7 +80,7 @@ def process_msg(bot, update):
 		return
 	if update.message.from_user.id == CONFIG['Admin']:
 		if update.message.reply_to_message != None:
-			if message_list.has_key(str(update.message.reply_to_message.message_id)):
+			if message_list.__contains__(str(update.message.reply_to_message.message_id)):
 				msg = update.message
 				sender_id = message_list[str(update.message.reply_to_message.message_id)]['sender_id']
 				try:
@@ -167,7 +160,7 @@ def process_command(bot, update):
 	elif command[0] == 'messege_info':
 		if (update.message.from_user.id == CONFIG['Admin']) and (update.message.chat_id == CONFIG['Admin']):
 			if update.message.reply_to_message != None:
-				if message_list.has_key(str(update.message.reply_to_message.message_id)):
+				if message_list.__contains__(str(update.message.reply_to_message.message_id)):
 					sender_id=message_list[str(update.message.reply_to_message.message_id)]['sender_id']
 					bot.send_message(chat_id=update.message.chat_id,text=LANG['info_data'] % (preference_list[str(sender_id)]['name'],str(sender_id)),parse_mode=telegram.ParseMode.MARKDOWN)
 				else:
@@ -185,10 +178,10 @@ dispatcher.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.command 
 												   process_command))
 
 updater.start_polling()
-print 'Started.'
+print('Started')
 updater.idle()
-print 'Stopping...'
+print('Stopping...')
 save_data()
 save_preference()
-print 'Data Saved.'
-print 'Stopped.'
+print('Data saved.')
+print('Stopped.')
