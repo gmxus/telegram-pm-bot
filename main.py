@@ -64,6 +64,7 @@ def init_user(user):
 	if not preference_list.has_key(str(user.id)):
 		preference_list[str(user.id)]={}
 		preference_list[str(user.id)]['receipt']=True
+		preference_list[str(user.id)]['conversation']=False
 		preference_list[str(user.id)]['name']=user.full_name
 		threading.Thread(target=save_preference).start()
 		return
@@ -122,12 +123,15 @@ def process_msg(bot, update):
 		else:
 			bot.send_message(chat_id=CONFIG['Admin'],text=LANG['reply_to_no_message'])
 	else:
-		fwd_msg = bot.forward_message(chat_id=CONFIG['Admin'], from_chat_id=update.message.chat_id, message_id=update.message.message_id)
-		if preference_list[str(update.message.from_user.id)]['receipt']:
-			bot.send_message(chat_id=update.message.from_user.id,text=LANG['message_received_receipt'])
-		message_list[str(fwd_msg.message_id)]={}
-		message_list[str(fwd_msg.message_id)]['sender_id']=update.message.from_user.id
-		threading.Thread(target=save_data).start()
+		if preference_list[str(user.id)]['conversation']:
+			fwd_msg = bot.forward_message(chat_id=CONFIG['Admin'], from_chat_id=update.message.chat_id, message_id=update.message.message_id)
+			if preference_list[str(update.message.from_user.id)]['receipt']:
+				bot.send_message(chat_id=update.message.from_user.id,text=LANG['message_received_receipt'])
+			message_list[str(fwd_msg.message_id)]={}
+			message_list[str(fwd_msg.message_id)]['sender_id']=update.message.from_user.id
+			threading.Thread(target=save_data).start()
+		else:
+			bot.send_message(chat_id=update.message.from_user.id,text=LANG['warning_switch_say'])
 	pass
 
 
@@ -171,6 +175,12 @@ def process_command(bot, update):
 					bot.send_message(chat_id=update.message.chat_id,text=LANG['info_data'] % (preference_list[str(sender_id)]['name'],str(sender_id)),parse_mode=telegram.ParseMode.MARKDOWN)
 				else:
 					bot.send_message(chat_id=update.message.chat_id,text=LANG['reply_to_message_no_data'])
+	elif command[0] == 'say':
+		global preference_list
+		preference_list[str(user.id)]['conversation']=True
+	elif command[0] == 'done':
+		global preference_list
+		preference_list[str(user.id)]['conversation']=False
 
 dispatcher.add_handler(telegram.ext.MessageHandler(telegram.ext.Filters.all & telegram.ext.Filters.private & (~ telegram.ext.Filters.command) & (~ telegram.ext.Filters.status_update), process_msg))
 

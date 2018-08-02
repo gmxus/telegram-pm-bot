@@ -12,5 +12,6 @@
 	"reply_message_sent": "the messege have been replied.\nreceiver：%s [link](tg://user?id=%s)",
 	"please_setup_first": "please firstly setup the bot.",
 	"blocked_alert": "cannot reply due to the user stop the bot.",
-	"reply_message_failed": "please retry due to the failed action."
+	"reply_message_failed": "please retry due to the failed action.",
+	"warning_switch_say": "to start conversation, you should firstly run /say directive."
 }
