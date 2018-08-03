@@ -150,9 +150,11 @@ def process_command(bot, update):
 	##start conversation
 	elif command[0] == 'say' :
 		preference_list[str(update.message.from_user.id)]['conversation'] = True
+		bot.send_message(chat_id=update.message.chat_id, text=LANG['notify_conversation_start'])
 	##end conversation
 	elif command[0] == 'done' :
 		preference_list[str(update.message.from_user.id)]['conversation'] = False
+		bot.send_message(chat_id=update.message.chat_id, text=LANG['notify_conversation_end'])
 	##messege-info you point
 	elif command[0] == 'messege_info' :
 		if (update.message.from_user.id == CONFIG['Admin']) and (update.message.chat_id == CONFIG['Admin']):
