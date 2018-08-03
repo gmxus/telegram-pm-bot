@@ -179,7 +179,7 @@ def process_command(bot, update):
 			bot.send_message(chat_id=update.message.chat_id, text='Telegram PM Bot to concatnate your conversation between the bot and the sender.\n\nhttps://github.com/NewBugger/telegram-pm-bot')
 		else:
 			##when received not existed command
-			bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_command_notexist'])
+			bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_command_notfound'])
 	# ask user to /done
 	else:
 		bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_end_conversation'])

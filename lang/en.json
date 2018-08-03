@@ -1,20 +1,18 @@
 {
-	"start": "your messege sent to me will be told to my master.",
-	"set_admin_successful": "now you're my admin.",
-	"set_admin_failed": "you should point a admin account by modify 'config.json' file.",
-	"receipt_on": "now receipt enabled.",
-	"receipt_off": "now receipt disabled.",
+	"start": "your messege will be told to my master.",
+	"receipt_on": "receipt enabled now.",
+	"receipt_off": "receipt disabled now.",
 	"info_data": "sender：%s ([link](tg://user?id=%s))",
-	"message_received_receipt": "now your messege have been told to my master.",
+	"message_received_receipt": "your messege have been told to my master.",
 	"reply_to_no_message": "please send a messege to me.",
 	"reply_to_message_no_data": "no data to reply.",
 	"reply_type_not_supported": "not support type to reply.",
 	"reply_message_sent": "the messege have been replied.\nreceiver：%s ([link](tg://user?id=%s))",
-	"please_setup_first": "please firstly setup the bot.",
+	"please_setup_first": "please setup the bot first.",
 	"blocked_alert": "cannot reply due to the user stop the bot.",
 	"reply_message_failed": "please retry due to the failed action.",
-	"warning_start_conversation": "to start conversation, you should firstly run /say directive.",
+	"warning_start_conversation": "to start conversation, you need to run /say directive first.",
 	"warning_admin_only": "this directive is only available for my master.",
-	"warning_end_conversation": "to run other bot functions, you should firstly run /done to end conversation.",
-	"warning_command_notexist": "command not exist."
+	"warning_end_conversation": "to run other bot functions, you need to run /done to end conversation first.",
+	"warning_command_notfound": "command not found."
 }
