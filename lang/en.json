@@ -13,6 +13,8 @@
 	"please_setup_first": "please firstly setup the bot.",
 	"blocked_alert": "cannot reply due to the user stop the bot.",
 	"reply_message_failed": "please retry due to the failed action.",
-	"warning_switch_say": "to start conversation, you should firstly run /say directive.",
-	"warning_admin_only": "this directive is only available for my master."
+	"warning_start_conversation": "to start conversation, you should firstly run /say directive.",
+	"warning_admin_only": "this directive is only available for my master.",
+	"warning_end_conversation": "to run other bot functions, you should firstly run /done to end conversation.",
+	"warning_command_notexist": "command not exist."
 }

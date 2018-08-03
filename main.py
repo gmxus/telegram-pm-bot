@@ -127,7 +127,7 @@ def process_msg(bot, update):
 		# when conversation is false
 		else:
 			# the sender should run /say
-			bot.send_message(chat_id=update.message.from_user.id, text=LANG['warning_switch_say'])
+			bot.send_message(chat_id=update.message.from_user.id, text=LANG['warning_start_conversation'])
 	pass
 
 
@@ -140,28 +140,20 @@ def process_command(bot, update):
 	# define name 'command'
 	command = update.message.text[1:].replace(CONFIG['Username'], '').lower().split()
 
-	# bot start
+	# bot directives independent to 'conversation' :
+	##bot start
 	if command[0] == 'start' :
 		bot.send_message(chat_id=update.message.chat_id, text=LANG['start'])
 		return
-	# start conversation
+	##start conversation
 	elif command[0] == 'say' :
 		global preference_list
 		preference_list[str(update.message.from_user.id)]['conversation'] = True
-	# end conversation
+	##end conversation
 	elif command[0] == 'done' :
 		global preference_list
 		preference_list[str(update.message.from_user.id)]['conversation'] = False
-	# receipt switch
-	elif command[0] == 'receipt_switch' :
-		global preference_list
-		preference_list[str(update.message.from_user.id)]['receipt'] = (preference_list[str(update.message.from_user.id)]['receipt'] == False)
-		threading.Thread(target=save_preference).start()
-		if preference_list[str(update.message.from_user.id)]['receipt']:
-			bot.send_message(chat_id=update.message.chat_id, text=LANG['receipt_on'])
-		else:
-			bot.send_message(chat_id=update.message.chat_id, text=LANG['receipt_off'])
-	# messege info you point
+	##messege-info you point
 	elif command[0] == 'messege_info' :
 		if (update.message.from_user.id == CONFIG['Admin']) and (update.message.chat_id == CONFIG['Admin']):
 			if update.message.reply_to_message:
@@ -172,10 +164,26 @@ def process_command(bot, update):
 					bot.send_message(chat_id=update.message.chat_id, text=LANG['reply_to_message_no_data'])
 		else:
 			bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_admin_only'])
-	# bot version
-	elif command[0] == 'version' :
-		bot.send_message(chat_id=update.message.chat_id, text='Telegram PM Bot to concatnate your conversation between the bot and the sender.\n\nhttps://github.com/NewBugger/telegram-pm-bot')
-		return
+	# only when 'conversation' false, can operate other bot directives, as to make /done useful
+	elif not preference_list[str(update.message.from_user.id)]['conversation'] :
+		##receipt switch
+		if command[0] == 'receipt_switch' :
+			global preference_list
+			preference_list[str(update.message.from_user.id)]['receipt'] = (preference_list[str(update.message.from_user.id)]['receipt'] == False)
+			threading.Thread(target=save_preference).start()
+			if preference_list[str(update.message.from_user.id)]['receipt']:
+				bot.send_message(chat_id=update.message.chat_id, text=LANG['receipt_on'])
+			else:
+				bot.send_message(chat_id=update.message.chat_id, text=LANG['receipt_off'])
+		##bot version
+		elif command[0] == 'version' :
+			bot.send_message(chat_id=update.message.chat_id, text='Telegram PM Bot to concatnate your conversation between the bot and the sender.\n\nhttps://github.com/NewBugger/telegram-pm-bot')
+		else:
+			##when received not existed command
+			bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_command_notexist'])
+	# ask user to /done
+	else:
+		bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_end_conversation'])
 
 
 
