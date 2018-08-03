@@ -6,7 +6,7 @@ based on [telegram-pm-chat-bot](https://github.com/Netrvin/telegram-pm-chat-bot)
 
 ## Installation
 firstly prepared the following:
-- python 2
+- python 3
 - pip
 
 then run :
@@ -17,10 +17,10 @@ pip install python-telegram-bot --upgrade
 
 ## Config
 modify those on `/config.json` :
-```json
+```c
 {
     "Admin": 0,        // ID of admin account (number id)
-    "Token": "0",      // Token of bot
+    "Token": "",      // Token of bot
     "Lang": "en"       // name of the lang file
 }
 ```
@@ -33,10 +33,10 @@ python main.py
 
 
 ## Directive
-| command         | function                                  | parameter                                  |
-| :---            | :---                                      | :---                                       |
-| receipt_switch  | enable or disable receipt                 | /receipt_switch                            |
-| messege_info    | info of the messege you point             | /messege_info                              |
-| say             | start conversation                        | /say                                       |
-| done            | end conversation                          | /done                                      |
-| version         | version of bot                            | /version                                   |
+| command         | function                                   | parameter                                  |
+| :---            | :---                                       | :---                                       |
+| say             | start conversation                         | /say                                       |
+| done            | end conversation                           | /done                                      |
+| receipt_switch  | enable or disable receipt                  | /receipt_switch                            |
+| messege_info    | info of the messege you point (admin only) | /messege_info                              |
+| version         | version of bot                             | /version                                   |
