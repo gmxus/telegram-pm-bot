@@ -19,9 +19,9 @@ pip install python-telegram-bot --upgrade
 modify those on `/config.json` :
 ```c
 {
-    "Admin": 0,        // ID of admin account (number id)
+    "Admin": 0,       // ID of admin account (number id)
     "Token": "",      // Token of bot
-    "Lang": "en"       // name of the lang file
+    "Lang": "en"      // name of the lang file
 }
 ```
 
