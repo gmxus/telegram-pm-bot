@@ -17,38 +17,38 @@ PATH = os.path.dirname(os.path.realpath(__file__)) + '/'
 
 
 # loading config files
-CONFIG = json.loads(open(PATH + 'config.json', 'r').read())
-LANG   = json.loads(open(PATH + 'lang/' + CONFIG['Lang'] + '.json').read())
+CONFIG = json.loads(open(PATH + 'config.json', 'r', encoding='utf-8').read())
+LANG   = json.loads(open(PATH + 'lang/' + CONFIG['Lang'] + '.json', 'r', encoding='utf-8').read())
 # def save_config
 def save_config():
-	with open(PATH + 'config.json', 'w') as f:
+	with open(PATH + 'config.json', 'w', encoding='utf-8') as f:
 		f.write(json.dumps(CONFIG, indent=4))
 
 
 # messege lock
 MESSAGE_LOCK = False
-message_list = json.loads(open(PATH + 'data.json', 'r').read())
+message_list = json.loads(open(PATH + 'data.json', 'r', encoding='utf-8').read())
 # def save_data
 def save_data():
 	global MESSAGE_LOCK
 	while MESSAGE_LOCK:
 		time.sleep(0.1)
 	MESSAGE_LOCK = True
-	with open(PATH + 'data.json', 'w') as f:
+	with open(PATH + 'data.json', 'w', encoding='utf-8') as f:
 		f.write(json.dumps(message_list))
 	MESSAGE_LOCK = False
 
 
 # preference lock
 PREFERENCE_LOCK = False
-preference_list = json.loads(open(PATH + 'preference.json', 'r').read())
+preference_list = json.loads(open(PATH + 'preference.json', 'r', encoding='utf-8').read())
 # def save_preference
 def save_preference():
 	global PREFERENCE_LOCK
 	while PREFERENCE_LOCK:
 		time.sleep(0.1)
 	PREFERENCE_LOCK = True
-	with open(PATH + 'preference.json', 'w') as f:
+	with open(PATH + 'preference.json', 'w', encoding='utf-8') as f:
 		f.write(json.dumps(preference_list))
 	PREFERENCE_LOCK = False
 
@@ -135,8 +135,10 @@ def process_msg(bot, update):
 def process_command(bot, update):
 	# init user
 	init_user(update.message.from_user)
-	# load global CONFIG
+	# load global 'CONFIG'
 	global CONFIG
+	# load global 'preference_list'
+	global preference_list
 	# define name 'command'
 	command = update.message.text[1:].replace(CONFIG['Username'], '').lower().split()
 
@@ -147,11 +149,9 @@ def process_command(bot, update):
 		return
 	##start conversation
 	elif command[0] == 'say' :
-		global preference_list
 		preference_list[str(update.message.from_user.id)]['conversation'] = True
 	##end conversation
 	elif command[0] == 'done' :
-		global preference_list
 		preference_list[str(update.message.from_user.id)]['conversation'] = False
 	##messege-info you point
 	elif command[0] == 'messege_info' :
@@ -168,7 +168,6 @@ def process_command(bot, update):
 	elif not preference_list[str(update.message.from_user.id)]['conversation'] :
 		##receipt switch
 		if command[0] == 'receipt_switch' :
-			global preference_list
 			preference_list[str(update.message.from_user.id)]['receipt'] = (preference_list[str(update.message.from_user.id)]['receipt'] == False)
 			threading.Thread(target=save_preference).start()
 			if preference_list[str(update.message.from_user.id)]['receipt']:
