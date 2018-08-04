@@ -67,9 +67,6 @@ def init_user(user):
 
 		# /block and /unblock
 		preference_list[str(user.id)]['blacklist'] = False
-		##create 'blacklist' for old json data
-		if not 'blacklist' in preference_list[str(user.id)]:
-			preference_list[str(user.id)]['blacklist'] = False
 
 		preference_list[str(user.id)]['name'] = user.full_name
 		threading.Thread(target=save_preference).start()
