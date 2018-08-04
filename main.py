@@ -119,7 +119,7 @@ def process_msg(bot, update):
 			bot.send_message(chat_id=CONFIG['Admin'], text=LANG['reply_to_no_message'])
 	else:
 		# only when 'conversation' is true
-		if preference_list[str(update.message.from_user.id)]['conversation'] :
+		if preference_list[str(update.message.from_user.id)]['conversation'] and not preference_list[str(update.message.from_user.id)]['blacklist'] :
 			# forward messege to me
 			msg_forward_to_me = bot.forward_message(chat_id=CONFIG['Admin'], from_chat_id=update.message.chat_id, message_id=update.message.message_id)
 			# add user-info output to me when content is sticker or photo.
@@ -150,7 +150,7 @@ def process_command(bot, update):
 	# define 'bot command'
 	command = update.message.text[1:].replace(CONFIG['Username'], '').lower().split()
 
-	if not preference_list[str(update.message.from_user.id)]['blacklist'] :
+	if not preference_list[str(update.message.from_user.id)]['blacklist'] or update.message.from_user.id == CONFIG['Admin'] :
 		# bot directives independent to 'conversation' :
 		##bot start
 		if command[0] == 'start' :
