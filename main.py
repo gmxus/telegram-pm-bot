@@ -58,8 +58,19 @@ def init_user(user):
 	global preference_list
 	if not preference_list.__contains__(str(user.id)):
 		preference_list[str(user.id)] = {}
+
+		# /receipt_switch
 		preference_list[str(user.id)]['receipt'] = True
+
+		# /say and /done
 		preference_list[str(user.id)]['conversation'] = False
+
+		# /block and /unblock
+		preference_list[str(user.id)]['blacklist'] = False
+		##create 'blacklist' for old json data
+		if not 'blacklist' in preference_list[str(user.id)]:
+			preference_list[str(user.id)]['blacklist'] = False
+
 		preference_list[str(user.id)]['name'] = user.full_name
 		threading.Thread(target=save_preference).start()
 		return
@@ -139,52 +150,77 @@ def process_command(bot, update):
 	global CONFIG
 	# load global 'preference_list'
 	global preference_list
-	# define name 'command'
+	# define 'bot command'
 	command = update.message.text[1:].replace(CONFIG['Username'], '').lower().split()
 
-	# bot directives independent to 'conversation' :
-	##bot start
-	if command[0] == 'start' :
-		bot.send_message(chat_id=update.message.chat_id, text=LANG['start'])
-		return
-	##start conversation
-	elif command[0] == 'say' :
-		preference_list[str(update.message.from_user.id)]['conversation'] = True
-		bot.send_message(chat_id=update.message.chat_id, text=LANG['notify_conversation_start'])
-	##end conversation
-	elif command[0] == 'done' :
-		preference_list[str(update.message.from_user.id)]['conversation'] = False
-		bot.send_message(chat_id=update.message.chat_id, text=LANG['notify_conversation_end'])
-	##messege-info you point
-	elif command[0] == 'messege_info' :
-		if (update.message.from_user.id == CONFIG['Admin']) and (update.message.chat_id == CONFIG['Admin']):
-			if update.message.reply_to_message:
-				if message_list.__contains__(str(update.message.reply_to_message.message_id)):
-					sender_id = message_list[str(update.message.reply_to_message.message_id)]['sender_id']
-					bot.send_message(chat_id=update.message.chat_id, text=LANG['info_data'] % (preference_list[str(sender_id)]['name'], str(sender_id)), parse_mode=telegram.ParseMode.MARKDOWN)
-				else:
-					bot.send_message(chat_id=update.message.chat_id, text=LANG['reply_to_message_no_data'])
-		else:
-			bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_admin_only'])
-	# only when 'conversation' false, can operate other bot directives, as to make /done useful
-	elif not preference_list[str(update.message.from_user.id)]['conversation'] :
-		##receipt switch
-		if command[0] == 'receipt_switch' :
-			preference_list[str(update.message.from_user.id)]['receipt'] = (preference_list[str(update.message.from_user.id)]['receipt'] == False)
-			threading.Thread(target=save_preference).start()
-			if preference_list[str(update.message.from_user.id)]['receipt']:
-				bot.send_message(chat_id=update.message.chat_id, text=LANG['receipt_on'])
+	if not preference_list[str(update.message.from_user.id)]['blacklist'] :
+		# bot directives independent to 'conversation' :
+		##bot start
+		if command[0] == 'start' :
+			bot.send_message(chat_id=update.message.chat_id, text=LANG['start'])
+			return
+		##start conversation
+		elif command[0] == 'say' :
+			preference_list[str(update.message.from_user.id)]['conversation'] = True
+			bot.send_message(chat_id=update.message.chat_id, text=LANG['notify_conversation_start'])
+		##end conversation
+		elif command[0] == 'done' :
+			preference_list[str(update.message.from_user.id)]['conversation'] = False
+			bot.send_message(chat_id=update.message.chat_id, text=LANG['notify_conversation_end'])
+		##messege-info you point
+		elif command[0] == 'messege_info' :
+			if (update.message.from_user.id == CONFIG['Admin']) and (update.message.chat_id == CONFIG['Admin']):
+				if update.message.reply_to_message:
+					if message_list.__contains__(str(update.message.reply_to_message.message_id)):
+						sender_id = message_list[str(update.message.reply_to_message.message_id)]['sender_id']
+						bot.send_message(chat_id=update.message.chat_id, text=LANG['info_data'] % (preference_list[str(sender_id)]['name'], str(sender_id)), parse_mode=telegram.ParseMode.MARKDOWN)
+					else:
+						bot.send_message(chat_id=update.message.chat_id, text=LANG['reply_to_message_no_data'])
 			else:
-				bot.send_message(chat_id=update.message.chat_id, text=LANG['receipt_off'])
-		##bot version
-		elif command[0] == 'version' :
-			bot.send_message(chat_id=update.message.chat_id, text='Telegram PM Bot to concatnate your conversation between the bot and the sender.\n\nhttps://github.com/NewBugger/telegram-pm-bot')
+				bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_admin_only'])
+		##blacklist function to block user
+		elif command[0] == 'block' :
+			if (update.message.from_user.id == CONFIG['Admin']) and (update.message.chat_id == CONFIG['Admin']):
+				if update.message.reply_to_message:
+					if message_list.__contains__(str(update.message.reply_to_message.message_id)):
+						preference_list[str(update.message.from_user.id)]['blacklist'] = True
+						bot.send_message(chat_id=update.message.chat_id, text=LANG['operation_block'])
+					else:
+						bot.send_message(chat_id=update.message.chat_id, text=LANG['reply_to_message_no_data'])
+			else:
+				bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_admin_only'])
+		##blacklist function to unblock user
+		elif command[0] == 'unblock' :
+			if (update.message.from_user.id == CONFIG['Admin']) and (update.message.chat_id == CONFIG['Admin']):
+				if update.message.reply_to_message:
+					if message_list.__contains__(str(update.message.reply_to_message.message_id)):
+						preference_list[str(update.message.from_user.id)]['blacklist'] = False
+						bot.send_message(chat_id=update.message.chat_id, text=LANG['operation_unblock'])
+					else:
+						bot.send_message(chat_id=update.message.chat_id, text=LANG['reply_to_message_no_data'])
+			else:
+				bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_admin_only'])
+		# only when 'conversation' false, can operate other bot directives, as to make /done useful
+		elif not preference_list[str(update.message.from_user.id)]['conversation'] :
+			##receipt switch
+			if command[0] == 'receipt_switch' :
+				preference_list[str(update.message.from_user.id)]['receipt'] = (preference_list[str(update.message.from_user.id)]['receipt'] == False)
+				threading.Thread(target=save_preference).start()
+				if preference_list[str(update.message.from_user.id)]['receipt']:
+					bot.send_message(chat_id=update.message.chat_id, text=LANG['receipt_on'])
+				else:
+					bot.send_message(chat_id=update.message.chat_id, text=LANG['receipt_off'])
+			##bot version
+			elif command[0] == 'version' :
+				bot.send_message(chat_id=update.message.chat_id, text='Telegram PM Bot to concatnate your conversation between the bot and the sender.\n\nhttps://github.com/NewBugger/telegram-pm-bot')
+			else:
+				##when received not existed command
+				bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_command_notfound'])
+		# ask user to /done
 		else:
-			##when received not existed command
-			bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_command_notfound'])
-	# ask user to /done
+			bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_end_conversation'])
 	else:
-		bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_end_conversation'])
+		bot.send_message(chat_id=update.message.chat_id, text=LANG['warning_blocked'])
 
 
 

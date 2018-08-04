@@ -16,5 +16,8 @@
 	"warning_end_conversation": "[bot_info] to run other bot functions, you need to run /done to end conversation first.",
 	"warning_command_notfound": "[bot_info] command not found.",
 	"notify_conversation_start": "[bot_info] you can talk to me now.",
-	"notify_conversation_end": "[bot_info] conversation end now."
+	"notify_conversation_end": "[bot_info] conversation end now.",
+	"warning_blocked": "[bot_info] you're blocked now, cannot run any directive.",
+	"operation_block": "[bot_info] the user you point is blocked now.",
+	"operation_unblock": "[bot_info] the user you point is unblocked now."
 }
