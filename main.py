@@ -114,9 +114,9 @@ def process_msg(bot, update):
 		if preference_list[str(update.message.from_user.id)]['conversation'] :
 			# forward messege to me
 			msg_forward_to_me = bot.forward_message(chat_id=CONFIG['Admin'], from_chat_id=update.message.chat_id, message_id=update.message.message_id)
-			###add user-info output to me when content is sticker or photo.
-			###if update.message.sticker or update.message.photo :
-			###bot.send_message(chat_id=update.message.chat_id, text=LANG['info_data'] % (preference_list[str(sender_id)]['name'], str(sender_id)), parse_mode=telegram.ParseMode.MARKDOWN)
+			# add user-info output to me when content is sticker or photo.
+			if msg_forward_to_me.sticker :
+			bot.send_message(chat_id=CONFIG['Admin'], text=LANG['info_data'] % (update.message.from_user.full_name, str(update.message.from_user.id)), parse_mode=telegram.ParseMode.MARKDOWN, reply_to_message_id=msg_forward_to_me.message_id)
 			# receipt to the sender
 			if preference_list[str(update.message.from_user.id)]['receipt']:
 				bot.send_message(chat_id=update.message.from_user.id, text=LANG['message_received_receipt'])
