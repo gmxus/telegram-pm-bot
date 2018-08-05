@@ -93,21 +93,22 @@ def process_msg(bot, update):
 		if update.message.reply_to_message:
 			if message_list.__contains__(str(update.message.reply_to_message.message_id)):
 				sender_id = message_list[str(update.message.reply_to_message.message_id)]['sender_id']
+				tryf_update_msg = update.message
 				try:
-					if update.message.audio:
-						bot.send_audio(chat_id=sender_id, audio=update.message.audio, caption=update.message.caption)
-					elif update.message.document:
-						bot.send_document(chat_id=sender_id, document=update.message.document, caption=update.message.caption)
-					elif update.message.voice:
-						bot.send_voice(chat_id=sender_id, voice=update.message.voice, caption=update.message.caption)
-					elif update.message.video:
-						bot.send_video(chat_id=sender_id, video=update.message.video, caption=update.message.caption)
-					elif update.message.sticker:
-						bot.send_sticker(chat_id=sender_id, sticker=update.message.sticker)
-					elif update.message.photo:
-						bot.send_photo(chat_id=sender_id, photo=update.message.photo[0], caption=update.message.caption)
-					elif update.message.text_markdown:
-						bot.send_message(chat_id=sender_id, text=update.message.text_markdown, parse_mode=telegram.ParseMode.MARKDOWN)
+					if tryf_update_msg.audio:
+						bot.send_audio(chat_id=sender_id, audio=tryf_update_msg.audio, caption=tryf_update_msg.caption)
+					elif tryf_update_msg.document:
+						bot.send_document(chat_id=sender_id, document=tryf_update_msg.document, caption=tryf_update_msg.caption)
+					elif tryf_update_msg.voice:
+						bot.send_voice(chat_id=sender_id, voice=tryf_update_msg.voice, caption=tryf_update_msg.caption)
+					elif tryf_update_msg.video:
+						bot.send_video(chat_id=sender_id, video=tryf_update_msg.video, caption=tryf_update_msg.caption)
+					elif tryf_update_msg.sticker:
+						bot.send_sticker(chat_id=sender_id, sticker=tryf_update_msg.sticker)
+					elif tryf_update_msg.photo:
+						bot.send_photo(chat_id=sender_id, photo=tryf_update_msg.photo[0], caption=tryf_update_msg.caption)
+					elif tryf_update_msg.text_markdown:
+						bot.send_message(chat_id=sender_id, text=tryf_update_msg.text_markdown, parse_mode=telegram.ParseMode.MARKDOWN)
 					else:
 						bot.send_message(chat_id=CONFIG['Admin'], text=LANG['error_reply_notsupporttype'])
 						return
