@@ -236,11 +236,13 @@ def process_command(bot, update):
 updaterf = telegram.ext.Updater(token=CONFIG['Token'])
 
 # handler defined
-handlerf = updaterf.dispatcher.add_handler
+handlerf_addhandler = updaterf.dispatcher.add_handler
+handlerf_MessageHandler = telegram.ext.MessageHandler
+handlerf_Filters = telegram.ext.Filters
 # receive command
-handlerf(telegram.ext.MessageHandler(telegram.ext.Filters.command & telegram.ext.Filters.private, process_command))
+handlerf_addhandler(handlerf_MessageHandler(handlerf_Filters.command & handlerf_Filters.private, process_command))
 # receive messege
-handlerf(telegram.ext.MessageHandler(telegram.ext.Filters.all & telegram.ext.Filters.private & (~ telegram.ext.Filters.command) & (~ telegram.ext.Filters.status_update), process_msg))
+handlerf_addhandler(handlerf_MessageHandler(handlerf_Filters.all & handlerf_Filters.private & (~ handlerf_Filters.command) & (~ handlerf_Filters.status_update), process_msg))
 
 # generate user-info
 mef = updaterf.bot.get_me()
